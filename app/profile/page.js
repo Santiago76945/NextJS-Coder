@@ -1,4 +1,5 @@
 // app/profile/page.js
+
 "use client";
 
 import { useAuth } from '@/context/AuthContext';

@@ -1,4 +1,5 @@
 // app/cart/page.js
+
 "use client";
 
 import { useCart } from '@/context/CartContext';
