@@ -1,7 +1,9 @@
 // app/product/[id]/page.js
+
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { useCart } from '@/context/CartContext';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import AddToCartButton from '@/components/AddToCartButton';
+import Image from 'next/image';
 
 export async function generateStaticParams() {
     const productsCollection = collection(db, 'products');
@@ -13,35 +15,34 @@ export async function generateStaticParams() {
     }));
 }
 
-export default function ProductDetailPage({ params }) {
+export default async function ProductDetailPage({ params }) {
     const { id } = params;
-    const [product, setProduct] = useState(null);
-    const { addToCart } = useCart();
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            const productRef = doc(db, 'products', id);
-            const productSnap = await getDoc(productRef);
-            if (productSnap.exists()) {
-                setProduct({ id: productSnap.id, ...productSnap.data() });
-            }
-        };
-        fetchProduct();
-    }, [id]);
+    const productRef = doc(db, 'products', id);
+    const productSnap = await getDoc(productRef);
 
-    if (!product) return <p>Cargando...</p>;
+    if (!productSnap.exists()) {
+        return <p>Producto no encontrado.</p>;
+    }
+
+    const product = { id: productSnap.id, ...productSnap.data() };
 
     return (
-        <div>
-            <h1>{product.name}</h1>
-            <p>Precio: ${product.price}</p>
-            <p>{product.description}</p>
-            <button
-                onClick={() => addToCart(product)}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-            >
-                Añadir al Carrito
-            </button>
+        <div className="max-w-4xl mx-auto p-4 flex flex-col md:flex-row">
+            <Image
+                src={product.imageUrl}
+                alt={product.name}
+                width={600}
+                height={400}
+                className="w-full md:w-1/2 h-64 object-cover mb-4 md:mb-0"
+            />
+            <div className="md:ml-6">
+                <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+                <p className="text-xl text-green-600 mb-4">${product.price}</p>
+                <p className="mb-4">{product.description}</p>
+                <AddToCartButton product={product} />
+            </div>
         </div>
     );
 }
+
