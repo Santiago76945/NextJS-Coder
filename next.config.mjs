@@ -9,9 +9,9 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'example.com', // <= tu dominio
+                hostname: 'example.com', // <= dominio
                 port: '',
-                pathname: '/images/**',  // o la ruta donde tengas tus imágenes
+                pathname: '/images/**',  // ruta donde tengas tus imágenes
             },
         ],
     },
