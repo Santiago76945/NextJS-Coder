@@ -1,9 +1,10 @@
 // app/product/[id]/page.js
 
-import { db } from '@/lib/firebase';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
-import AddToCartButton from '@/components/AddToCartButton';
+import { db } from '@/lib/firebase';
+import ProductDetailClient from './ProductDetailClient';
 import Image from 'next/image';
+import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
     const productsCollection = collection(db, 'products');
@@ -22,7 +23,8 @@ export default async function ProductDetailPage({ params }) {
     const productSnap = await getDoc(productRef);
 
     if (!productSnap.exists()) {
-        return <p>Producto no encontrado.</p>;
+        // Retornar página 404
+        return notFound();
     }
 
     const product = { id: productSnap.id, ...productSnap.data() };
@@ -40,7 +42,8 @@ export default async function ProductDetailPage({ params }) {
                 <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
                 <p className="text-xl text-green-600 mb-4">${product.price}</p>
                 <p className="mb-4">{product.description}</p>
-                <AddToCartButton product={product} />
+                {/* Componente cliente para la selección de cantidad y variantes */}
+                <ProductDetailClient product={product} />
             </div>
         </div>
     );
